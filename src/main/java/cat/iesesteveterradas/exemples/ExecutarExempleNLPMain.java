@@ -18,8 +18,9 @@ import edu.stanford.nlp.pipeline.*;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.util.CoreMap;
 
-
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +51,8 @@ public class ExecutarExempleNLPMain {
         // Tokenization
         TokenizerModel modelToken = new TokenizerModel(modelInToken);
         TokenizerME tokenizer = new TokenizerME(modelToken);
+
+        /*
         logger.info("\nTokenization and POS Tagging:");
         for (String sentence : sentences) {
             try{
@@ -66,17 +69,50 @@ public class ExecutarExempleNLPMain {
             } catch (Exception e){
                 logger.error(e.getMessage());
             }
-        }
+        } */
 
         // Named Entity Recognition
         TokenNameFinderModel modelPerson = new TokenNameFinderModel(modelInPerson);
         NameFinderME nameFinder = new NameFinderME(modelPerson);
+        File resultFile = new File("./data/noms_propis.txt");
+        FileWriter writer = new FileWriter(resultFile);
+
         logger.info("\nNamed Entity Recognition:");
+        //IdentificR noms complets
         for (String sentence : sentences) {
             String[] tokens = tokenizer.tokenize(sentence);
             opennlp.tools.util.Span[] nameSpans = nameFinder.find(tokens);
-            for (opennlp.tools.util.Span s : nameSpans) {
-                logger.info("Entity: " + tokens[s.getStart()]);
+            StringBuilder combinedName = new StringBuilder();                 //Aixó del StringBuilder no s'habia que era, chatGPT em va recomanar posar-lo encomptes d'un String normal
+            boolean inName = false; 
+            for (int i = 0; i < tokens.length; i++) {
+                if (nameSpans != null && nameSpans.length > 0) {
+                    boolean isNameToken = false;
+                    for (opennlp.tools.util.Span s : nameSpans) {
+                        if (i >= s.getStart() && i < s.getEnd()) {
+                            isNameToken = true;
+                            break;
+                        }
+                    }
+                    if (isNameToken) {
+                        if (!inName) {
+                            inName = true;
+                        }
+                        combinedName.append(tokens[i]).append(" ");
+                    } else {
+                        if (inName) {
+                            logger.info("Entity: " + combinedName.toString().trim() + " - PERSON");
+                            writer.append("Entity: " + combinedName.toString().trim() + " - PERSON\n");
+                            inName = false;
+                            combinedName.setLength(0); 
+                        }
+                    }
+                }
+            }
+            //Si n'hi queda algun a final de frase
+            if (inName) {
+                logger.info("Entity: " + combinedName.toString().trim() + " - PERSON");
+                writer.append("Entity: " + combinedName.toString().trim() + " - PERSON\n");
+                combinedName.setLength(0); 
             }
         }
 
@@ -85,7 +121,10 @@ public class ExecutarExempleNLPMain {
         modelInToken.close();
         modelInPOS.close();
         modelInPerson.close();
+        writer.close();
 
+
+        /* Diria que aquesta part ya no serveix per a res
 
         // Inicialitza Stanford CoreNLP
         Properties props = new Properties();
@@ -129,5 +168,6 @@ public class ExecutarExempleNLPMain {
             String sentiment = sentence.get(SentimentCoreAnnotations.SentimentClass.class);
             logger.info("Sentiment: " + sentiment);
         }        
+        */
     }
 }
