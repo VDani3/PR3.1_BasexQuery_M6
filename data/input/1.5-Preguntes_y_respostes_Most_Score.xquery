@@ -9,7 +9,7 @@ declare option output:indent "yes";
         order by xs:integer($q/@Score) descending
         return $q
     )
-    for $q at $pos in $sorted-posts
+    for $q at $pos in subsequence($sorted-posts, 1, 10)
     where $pos <= 100
     return 
       <pregunta>

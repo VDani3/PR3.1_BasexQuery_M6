@@ -1,13 +1,42 @@
-declare option output:method "xml";
-declare option output:indent "yes";
-
-<users>{
-   for $u in /users/row
-   let $count := count(/posts/row[@OwnerUserId=$u/@Id and @PostTypeId="1"])
-   order by xs:integer($count) descending
-   return  
-     <useri>
-       <name>{$u/@DisplayName}</name>
-       <count>{$count}</count>
-     </useri>
-}</users>
+<users>
+  <useri>
+    <name DisplayName="jessecurry"/>
+    <count>2</count>
+  </useri>
+  <useri>
+    <name DisplayName="Herr"/>
+    <count>2</count>
+  </useri>
+  <useri>
+    <name DisplayName="poke"/>
+    <count>1</count>
+  </useri>
+  <useri>
+    <name DisplayName="Alberto Fernández"/>
+    <count>1</count>
+  </useri>
+  <useri>
+    <name DisplayName="Community"/>
+    <count>0</count>
+  </useri>
+  <useri>
+    <name DisplayName="Geoff Dalgas"/>
+    <count>0</count>
+  </useri>
+  <useri>
+    <name DisplayName="Jin"/>
+    <count>0</count>
+  </useri>
+  <useri>
+    <name DisplayName="Emmett"/>
+    <count>0</count>
+  </useri>
+  <useri>
+    <name DisplayName="JasonTrue"/>
+    <count>0</count>
+  </useri>
+  <useri>
+    <name DisplayName="Rebecca Chernoff"/>
+    <count>0</count>
+  </useri>
+</users>

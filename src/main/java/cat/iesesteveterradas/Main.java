@@ -36,7 +36,6 @@ public class Main {
                 File[] dir = dataDir.listFiles();
                 for (File f : dir) {
                     String query = Files.readString(f.toPath());
-                    System.err.println(query);
                     String result = session.execute(new XQuery(query));
                     File resultFile = new File("./data/output/result_"+f.getName()+".xml");
                     System.out.println(resultFile.getName());
